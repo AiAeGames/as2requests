@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Audiosurf 2 Bot for Twitch</title>
+{% if where == "0" %}
+<meta http-equiv="refresh" content="10">
+{% endif %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="author" content="AiAe">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+<body>
+{% if userinfo %}
+<nav class="navbar navbar-default">
+<div class="container">
+<div class="container-fluid">
+<div class="navbar-header">
+<a class="navbar-brand" href="https://as2.aiaegames.xyz/">Audiosurf 2 Bot</a>
+</div>
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<ul class="nav navbar-nav">
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Show <span class="caret"></span></a>
+<ul class="dropdown-menu" role="menu">
+<li><a href="https://as2.aiaegames.xyz/0/">Not played</a></li>
+<li><a href="https://as2.aiaegames.xyz/1/">Played</a></li>
+<li><a href="https://as2.aiaegames.xyz/2/">Ignored</a></li>
+</ul>
+</li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Statistics <span class="caret"></span></a>
+<ul class="dropdown-menu" role="menu">
+<li><a>Pending requests: {{stats[0]["pending"]}}</a></li>
+<li><a>Played requests: {{stats[1]["played"]}}</a></li>
+<li><a>Ignored requests: {{stats[2]["ignored"]}}</a></li>
+<li><a>Total requests: {{stats[3]["total"]}}</a></li>
+</ul>
+</li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<!--<li><a href="#">Turn off bot</a></li>-->
+</ul>
+</div>
+</div>
+</div>
+</nav>
+<div class="container">
+<div class="row">
+<div class="col-md-12">
+<div class="table-responsive">
+<table id="mytable" class="table table-bordred table-striped">
+<thead>
+<th>Link id <small>(click to copy)</small></th>
+<th>Requested by</th>
+<th>Song info</th>
+<th>Mode</th>
+<th style="width:156px">Action</th>
+</thead>
+<tbody>
+{% for row in list_requests %}
+<tr 
+{% if row["action"] == 1 %} 
+class="success"
+{% elif row["action"] == 2 %}
+class="danger"
+{% endif %}
+>
+<td><p id='p{{ row["id"] }}'><a onclick="copyToClipboard('#p{{ row["id"] }}')">{{ row["song_id"] }}</a></p></td>
+<td>{{ row["requested_by"] }}</td>
+<td><a href='https://youtube.com/watch?v={{ row["song_id"] }}' target="_blank">{{ row["title"] }}</a> - {{ row["duration"] }}</td>
+<td>{{ row["mode"] }}</td>
+<td>
+<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/done/{{ row["id"] }}" class="btn btn-xs btn-info">Done</a></p>
+<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/ignore/{{ row["id"] }}" class="btn btn-xs btn-warning">Ignore</a></p>
+<p style="float: right;"><a href="https://as2.aiaegames.xyz/action/delete/{{ row["id"] }}" class="btn btn-xs btn-danger">Delete</a></p>
+</td>
+</tr>
+{% endfor %}
+</tbody>  
+</table>
+</div>
+</div>
+</div>
+</div>
+{% else %}
+<br>
+<center>
+<a href='https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=&redirect_uri=https://as2.aiaegames.xyz/twitch/'><img src="{{ url_for('static', filename='twitch.png') }}"></a>
+</center>
+{% endif %}
+<script data-cfasync='false' type="text/javascript">
+function copyToClipboard(element) {
+var $temp = $("<input>");
+$("body").append($temp);
+$temp.val($(element).text()).select();
+document.execCommand("copy");
+$temp.remove();
+}
+</script>
+<script data-cfasync='false' type="text/javascript" src="{{ url_for('static', filename='jquery-1.10.2.min.js') }}"></script>
+<script data-cfasync='false' type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+</body>
+</html>
