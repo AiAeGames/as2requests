@@ -1,0 +1,11 @@
+{
+    "host" : "",
+    "user" : "",
+    "password" : "",
+    "database" : "",
+    "twitch_irc" : "irc.chat.twitch.tv",
+    "twitch_password" : "",
+    "twitch_username" : "",
+    "twitch_secret" : "",
+    "twitch_client" : ""
+}
