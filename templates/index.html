@@ -38,9 +38,10 @@
 <li><a>Total requests: {{stats[3]["total"]}}</a></li>
 </ul>
 </li>
+<li><a href="https://as2.aiaegames.xyz/playing/{{ stats[4]["username"] }}/">Current song link</a></li>
 </ul>
 <ul class="nav navbar-nav navbar-right">
-<!--<li><a href="#">Turn off bot</a></li>-->
+<li><a href="https://as2.aiaegames.xyz/action/bot/">Turn {% if stats[4]["status"] == "1" %} off {% else %} on {% endif %} bot</a></li>
 </ul>
 </div>
 </div>
@@ -56,15 +57,13 @@
 <th>Requested by</th>
 <th>Song info</th>
 <th>Mode</th>
-<th style="width:156px">Action</th>
+<th style="width:210px">Action</th>
 </thead>
 <tbody>
 {% for row in list_requests %}
 <tr 
-{% if row["action"] == 1 %} 
+{% if row["status"] == 1 %} 
 class="success"
-{% elif row["action"] == 2 %}
-class="danger"
 {% endif %}
 >
 <td><p id='p{{ row["id"] }}'><a onclick="copyToClipboard('#p{{ row["id"] }}')">{{ row["song_id"] }}</a></p></td>
@@ -72,9 +71,12 @@ class="danger"
 <td><a href='https://youtube.com/watch?v={{ row["song_id"] }}' target="_blank">{{ row["title"] }}</a> - {{ row["duration"] }}</td>
 <td>{{ row["mode"] }}</td>
 <td>
+{% if row["status"] == 0 %} 
+<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/playing/{{ row["id"] }}" class="btn btn-xs btn-success">Playing</a></p>
+{% endif %}
 <p style="float: left;"><a href="https://as2.aiaegames.xyz/action/done/{{ row["id"] }}" class="btn btn-xs btn-info">Done</a></p>
 <p style="float: left;"><a href="https://as2.aiaegames.xyz/action/ignore/{{ row["id"] }}" class="btn btn-xs btn-warning">Ignore</a></p>
-<p style="float: right;"><a href="https://as2.aiaegames.xyz/action/delete/{{ row["id"] }}" class="btn btn-xs btn-danger">Delete</a></p>
+<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/delete/{{ row["id"] }}" class="btn btn-xs btn-danger">Delete</a></p>
 </td>
 </tr>
 {% endfor %}
