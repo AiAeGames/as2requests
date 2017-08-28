@@ -1,11 +1,12 @@
 {
-    "host" : "",
+    "host" : "localhost",
     "user" : "",
     "password" : "",
     "database" : "",
     "twitch_irc" : "irc.chat.twitch.tv",
-    "twitch_password" : "",
+    "twitch_oauth" : "",
     "twitch_username" : "",
     "twitch_secret" : "",
-    "twitch_client" : ""
+    "twitch_client" : "",
+    "youtube_api": ""
 }
