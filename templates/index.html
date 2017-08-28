@@ -17,31 +17,14 @@
 <div class="container">
 <div class="container-fluid">
 <div class="navbar-header">
-<a class="navbar-brand" href="https://as2.aiaegames.xyz/">Audiosurf 2 Bot</a>
+<a class="navbar-brand" href="{{ url_for('index') }}">Audiosurf 2 Bot</a>
 </div>
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 <ul class="nav navbar-nav">
-<li class="dropdown">
-<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Show <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="https://as2.aiaegames.xyz/0/">Not played</a></li>
-<li><a href="https://as2.aiaegames.xyz/1/">Played</a></li>
-<li><a href="https://as2.aiaegames.xyz/2/">Ignored</a></li>
-</ul>
-</li>
-<li class="dropdown">
-<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Statistics <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a>Pending requests: {{stats[0]["pending"]}}</a></li>
-<li><a>Played requests: {{stats[1]["played"]}}</a></li>
-<li><a>Ignored requests: {{stats[2]["ignored"]}}</a></li>
-<li><a>Total requests: {{stats[3]["total"]}}</a></li>
-</ul>
-</li>
-<li><a href="https://as2.aiaegames.xyz/playing/{{ stats[4]["username"] }}/">Current song link</a></li>
+<li><a href="{{ url_for('playing', username = stats[4]['username']) }}">Now Playing</a></li>
 </ul>
 <ul class="nav navbar-nav navbar-right">
-<li><a href="https://as2.aiaegames.xyz/action/bot/">Turn {% if stats[4]["status"] == "1" %} off {% else %} on {% endif %} bot</a></li>
+<li><a href="{{ url_for('action', action = 'bot') }}">Turn {% if stats[4]["status"] == "1" %} off {% else %} on {% endif %} bot</a></li>
 </ul>
 </div>
 </div>
@@ -50,6 +33,11 @@
 <div class="container">
 <div class="row">
 <div class="col-md-12">
+<div class="btn-group btn-group-justified">
+<a href="{{ url_for('index', where = '0') }}" class="btn btn-primary">Pending <span class="badge">{{stats[0]["pending"]}}</span></a>
+<a href="{{ url_for('index', where = '1') }}" class="btn btn-primary">Played <span class="badge">{{stats[1]["played"]}}</span></a>
+<a href="{{ url_for('index', where = '2') }}" class="btn btn-primary">Ignored <span class="badge">{{stats[2]["ignored"]}}</span></a>
+</div>
 <div class="table-responsive">
 <table id="mytable" class="table table-bordred table-striped">
 <thead>
@@ -72,11 +60,10 @@ class="success"
 <td>{{ row["mode"] }}</td>
 <td>
 {% if row["status"] == 0 %} 
-<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/playing/{{ row["id"] }}" class="btn btn-xs btn-success">Playing</a></p>
+<p style="float: left;"><a href="{{ url_for('action', action = 'playing', rid = row.id) }}" class="btn btn-xs btn-success"> Playing </a></p>
 {% endif %}
-<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/done/{{ row["id"] }}" class="btn btn-xs btn-info">Done</a></p>
-<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/ignore/{{ row["id"] }}" class="btn btn-xs btn-warning">Ignore</a></p>
-<p style="float: left;"><a href="https://as2.aiaegames.xyz/action/delete/{{ row["id"] }}" class="btn btn-xs btn-danger">Delete</a></p>
+<p style="float: left;"><a href="{{ url_for('action', action = 'done', rid = row.id) }}" class="btn btn-xs btn-info"> Done </a></p>
+<p style="float: left;"><a href="{{ url_for('action', action = 'ignore', rid = row.id) }}" class="btn btn-xs btn-warning"> Ignore </a></p>
 </td>
 </tr>
 {% endfor %}
@@ -89,7 +76,7 @@ class="success"
 {% else %}
 <br>
 <center>
-<a href='https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=&redirect_uri=https://as2.aiaegames.xyz/twitch/'><img src="{{ url_for('static', filename='twitch.png') }}"></a>
+<a href='https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=2jeufei9q7l26l12rwl5odp0ltnlz5j&redirect_uri=http://as2.aiae.ovh/twitch/'><img src="{{ url_for('static', filename='twitch.png') }}"></a>
 </center>
 {% endif %}
 <script data-cfasync='false' type="text/javascript">
