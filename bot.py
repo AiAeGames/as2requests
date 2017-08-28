@@ -6,6 +6,7 @@ import irc.strings
 import json, time, re, pymysql, requests
 from cooldown import cooldown
 from threading import Thread
+from datadog import statsd
 
 with open("config.json", "r") as f:
     config = json.load(f)
@@ -27,7 +28,7 @@ def execute(connection, cursor, sql, args=None):
 
 def youtube_api(v):
     try:
-        request = requests.get("https://www.googleapis.com/youtube/v3/videos?id=%s&part=snippet,contentDetails&key=&fields=items(snippet/title,contentDetails/duration)" % v)
+        request = requests.get("https://www.googleapis.com/youtube/v3/videos?id={}&part=snippet,contentDetails&key={}&fields=items(snippet/title,contentDetails/duration)".format(v, config["youtube_api"]))
         return json.loads(request.text)
     except requests.exceptions.RequestException as e:
         return
@@ -41,14 +42,15 @@ class Reconnect(irc.bot.ReconnectStrategy):
 class TwitchBot(irc.bot.SingleServerIRCBot):
     connection, cursor = connect()
     def __init__(self):
-        irc.bot.SingleServerIRCBot.__init__(self, [(config["twitch_irc"], 6667, config["twitch_password"])], config["twitch_username"], config["twitch_username"], recon=Reconnect())
+        irc.bot.SingleServerIRCBot.__init__(self, [(config["twitch_irc"], 6667, config["twitch_oauth"])], config["twitch_username"], config["twitch_username"], recon=Reconnect())
 
     def on_pubmsg(self, c, e):
         self.do_command(e)
-        print(e)
+        #print(e)
 
     @cooldown(20)
     def youtube_request(self, groups, e):
+        statsd.increment('as2.new_request')
         link, v, mode = groups
         channel = e.target
         user_quarry = execute(self.connection, self.cursor, "SELECT id FROM users WHERE username = %s", [channel.replace("#", "")])
@@ -59,7 +61,8 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         title = yt["items"][0]["snippet"]["title"]
         duration = yt["items"][0]["contentDetails"]["duration"]
         request_quarry = execute(self.connection, self.cursor, "INSERT INTO requests (user_id, requested_by, song_id, title, duration, mode, action) VALUES(%s, %s, %s, %s, %s, %s, %s)", [user_result["id"], e.source.nick, v, title, duration, mode, 0])
-        self.connection.privmsg(channel, "Request is added.")
+        msg = '{} is added.'.format(title)
+        self.connection.privmsg(channel, msg)
 
     def do_command(self, e):
         c = self.connection
@@ -93,6 +96,6 @@ def AutoJoin(mtbot):
                 print("Part " + row["username"])
                 channels.remove(row["username"])
                 mtbot.connection.part("#" + row["username"])
-        time.sleep(10)
+        time.sleep(60)
 
 Thread(target=AutoJoin, args=(bot, )).start()
